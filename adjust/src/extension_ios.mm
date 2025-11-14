@@ -1,6 +1,7 @@
 #if defined(DM_PLATFORM_IOS)
 
 #import <AdjustSdk/Adjust.h>
+#import <AdjustSdk/ADJDeeplink.h>
 #include "extension.h"
 
 #import "ios/utils.h"
@@ -25,12 +26,14 @@ static NSString *const EVENT_ERROR_MESSAGE = @"error_message";
 static ExtensionInterface *extension_instance;
 int EXTENSION_INIT(lua_State *L) {return [extension_instance init_:L];}
 int EXTENSION_TRACK_EVENT(lua_State *L) {return [extension_instance track_event:L];}
+int EXTENSION_TRACK_AD_REVENUE(lua_State *L) {return [extension_instance track_ad_revenue:L];}
 int EXTENSION_SET_SESSION_PARAMETERS(lua_State *L) {return [extension_instance set_session_parameters:L];}
-int EXTENSION_SET_ENABLED(lua_State *L) {return [extension_instance set_enabled:L];}
+int EXTENSION_ENABLE(lua_State *L) {return [extension_instance enable:L];}
+int EXTENSION_DISABLE(lua_State *L) {return [extension_instance disable:L];}
 int EXTENSION_SET_PUSHTOKEN(lua_State *L) {return [extension_instance set_pushtoken:L];}
-int EXTENSION_SET_OFFLINE_MODE(lua_State *L) {return [extension_instance set_offline_mode:L];}
-int EXTENSION_SEND_FIRST_PACKAGES(lua_State *L) {return [extension_instance send_first_packages:L];}
-int EXTENSION_APP_WILL_OPEN_URL(lua_State *L) {return [extension_instance app_will_open_url:L];}
+int EXTENSION_SWITCH_TO_OFFLINE_MODE(lua_State *L) {return [extension_instance switch_to_offline_mode:L];}
+int EXTENSION_SWITCH_BACK_TO_ONLINE_MODE(lua_State *L) {return [extension_instance switch_back_to_online_mode:L];}
+int EXTENSION_PROCESS_DEEPLINK(lua_State *L) {return [extension_instance process_deeplink:L];}
 int EXTENSION_GDPR_FORGET_ME(lua_State *L) {return [extension_instance gdpr_forget_me:L];}
 int EXTENSION_GET_ATTRIBUTION(lua_State *L) {return [extension_instance get_attribution:L];}
 int EXTENSION_GET_ADID(lua_State *L) {return [extension_instance get_adid:L];}
@@ -113,7 +116,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 	dmScript::GetInstance(L);
 	script_listener.script_instance = [Utils new_ref:L];
 
-	ADJConfig *config = [ADJConfig configWithAppToken:app_token environment:is_sandbox ? ADJEnvironmentSandbox : ADJEnvironmentProduction allowSuppressLogLevel:true];
+	ADJConfig *config = [[ADJConfig alloc] initWithAppToken:app_token environment:(is_sandbox ? ADJEnvironmentSandbox : ADJEnvironmentProduction) allowSuppressLogLevel:true];
 
 	if (secret_id && secret_info1 && secret_info2 && secret_info3 && secret_info4) {
 		[config setAppSecret:secret_id.unsignedLongValue info1:secret_info1.unsignedLongValue info2:secret_info2.unsignedLongValue info3:secret_info3.unsignedLongValue info4:secret_info4.unsignedLongValue];
@@ -129,10 +132,6 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
 	if (is_device_known) {
 		[config setIsDeviceKnown:is_device_known.boolValue];
-	}
-
-	if (event_buffering) {
-		[config setEventBufferingEnabled:event_buffering.boolValue];
 	}
 
 	if (log_level) {
@@ -169,7 +168,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
 	[config setDelegate:self];
 
-	[Adjust appDidLaunch:config];
+	[Adjust initSdk:config];
 
     is_initialized = true;
     NSMutableDictionary *event = [Utils new_event:ADJUST];
