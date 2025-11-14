@@ -4,6 +4,10 @@
 #import <AdjustSdk/ADJDeeplink.h>
 #import <AdjustSdk/ADJAdRevenue.h>
 #import <AdjustSdk/ADJAttribution.h>
+#import <AdjustSdk/ADJEventSuccess.h>
+#import <AdjustSdk/ADJEventFailure.h>
+#import <AdjustSdk/ADJSessionSuccess.h>
+#import <AdjustSdk/ADJSessionFailure.h>
 #include "extension.h"
 
 #import "ios/utils.h"
