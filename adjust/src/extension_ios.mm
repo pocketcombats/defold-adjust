@@ -1,6 +1,7 @@
 #if defined(DM_PLATFORM_IOS)
 
 #import <AdjustSdk/Adjust.h>
+#import <AdjustSdk/ADJConfig.h>
 #import <AdjustSdk/ADJDeeplink.h>
 #import <AdjustSdk/ADJAdRevenue.h>
 #import <AdjustSdk/ADJAttribution.h>
@@ -130,7 +131,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
  ADJConfig *config = [[ADJConfig alloc] initWithAppToken:app_token environment:(is_sandbox ? ADJEnvironmentSandbox : ADJEnvironmentProduction) suppressLogLevel:true];
 
 	if (default_tracker) {
-		config.defaultTracker = default_tracker;
+		[config setDefaultTracker:default_tracker];
 	}
 
 	if (log_level) {
