@@ -3,6 +3,7 @@
 #import <AdjustSdk/Adjust.h>
 #import <AdjustSdk/ADJDeeplink.h>
 #import <AdjustSdk/ADJAdRevenue.h>
+#import <AdjustSdk/ADJAttribution.h>
 #include "extension.h"
 
 #import "ios/utils.h"
