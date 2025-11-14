@@ -19,7 +19,7 @@
 
 @interface LuaTask : NSObject
 @property(nonatomic,retain) LuaScriptListener *script_listener;
-@property(nonatomic,retain) NSDictionary *event;
+@property(nonatomic,retain) NSObject *event;
 @property(nonatomic) bool delete_ref;
 @end
 
@@ -37,8 +37,8 @@
 +(void)delete_ref_if_not_nil:(int)ref;
 +(void)put:(NSMutableDictionary*)hastable key:(NSString*)key value:(NSObject*)value;
 +(NSMutableDictionary*)new_event:(NSString*)name;
-+(void)dispatch_event:(LuaScriptListener*)script_listener event:(NSMutableDictionary*)event;
-+(void)dispatch_event:(LuaScriptListener*)script_listener event:(NSMutableDictionary*)event delete_ref:(bool)delete_ref;
++(void)dispatch_event:(LuaScriptListener*)script_listener event:(NSObject*)event;
++(void)dispatch_event:(LuaScriptListener*)script_listener event:(NSObject*)event delete_ref:(bool)delete_ref;
 +(void)set_c_function_as_field:(lua_State*)L name:(const char*)name function:(lua_CFunction)function;
 +(void)set_c_closure_as_field:(lua_State*)L name:(const char*)name function:(lua_CFunction)function upvalue:(void*)upvalue;
 +(void)push_value:(lua_State*)L value:(NSObject*)object;

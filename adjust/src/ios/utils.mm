@@ -59,17 +59,23 @@ static NSMutableArray *tasks = [[NSMutableArray alloc] init];
 	return [NSMutableDictionary dictionaryWithDictionary:@{@"name" : name}];
 }
 
-+(void)dispatch_event:(LuaScriptListener*)script_listener event:(NSMutableDictionary*)event {
++(void)dispatch_event:(LuaScriptListener*)script_listener event:(NSObject*)event {
 	[self dispatch_event:script_listener event:event delete_ref:false];
 }
 
-+(void)dispatch_event:(LuaScriptListener*)script_listener event:(NSMutableDictionary*)event delete_ref:(bool)delete_ref {
++(void)dispatch_event:(LuaScriptListener*)script_listener event:(NSObject*)event delete_ref:(bool)delete_ref {
 	if ((script_listener.listener == LUA_REFNIL) || (script_listener.listener == LUA_NOREF) || (script_listener.script_instance == LUA_REFNIL) || (script_listener.script_instance == LUA_NOREF)) {
 		return;
 	}
 	LuaTask *task = [[LuaTask alloc] init];
 	task.script_listener = script_listener;
-	task.event = [NSDictionary dictionaryWithDictionary:event];
+	// If event is a mutable dictionary, store an immutable copy to avoid later mutation issues.
+	if ([event isKindOfClass:[NSMutableDictionary class]]) {
+		NSMutableDictionary *md = (NSMutableDictionary*)event;
+		task.event = [NSDictionary dictionaryWithDictionary:md];
+	} else {
+		task.event = event;
+	}
 	task.delete_ref = delete_ref;
 	[tasks addObject:task];
 }
@@ -151,7 +157,7 @@ static NSMutableArray *tasks = [[NSMutableArray alloc] init];
 		lua_rawgeti(L, LUA_REGISTRYINDEX, task.script_listener.listener);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, task.script_listener.script_instance);
 		dmScript::SetInstance(L);
-		[self push_hashtable:L hashtable:task.event];
+		[self push_value:L value:task.event];
 		lua_call(L, 1, 0);
 		if (task.delete_ref) {
 			luaL_unref(L, LUA_REGISTRYINDEX, task.script_listener.listener);
