@@ -8,6 +8,7 @@
 #import <AdjustSdk/ADJEventFailure.h>
 #import <AdjustSdk/ADJSessionSuccess.h>
 #import <AdjustSdk/ADJSessionFailure.h>
+#import <AdjustSdk/ADJLogger.h>
 #include "extension.h"
 
 #import "ios/utils.h"
@@ -140,7 +141,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 			l = ADJLogLevelDebug;
 		} else if ([log_level isEqualToString:@"error"]) {
 			l = ADJLogLevelError;
-		} else if ([log_level isEqualToString:@"supress"]) {
+		} else if ([log_level isEqualToString:@"suppress"] || [log_level isEqualToString:@"supress"]) {
 			l = ADJLogLevelSuppress;
 		} else if ([log_level isEqualToString:@"verbose"]) {
 			l = ADJLogLevelVerbose;
